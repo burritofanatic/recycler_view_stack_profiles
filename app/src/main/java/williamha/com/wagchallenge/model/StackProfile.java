@@ -1,5 +1,6 @@
 package williamha.com.wagchallenge.model;
 
+
 public class StackProfile {
 
     private String displayName;

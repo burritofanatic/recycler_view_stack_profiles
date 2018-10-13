@@ -1,8 +1,13 @@
 package williamha.com.wagchallenge.viewmodel;
 
+import android.app.Application;
+import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
-import android.arch.lifecycle.ViewModel;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -10,12 +15,18 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import williamha.com.wagchallenge.managers.StoreManager;
 import williamha.com.wagchallenge.model.Badges;
 import williamha.com.wagchallenge.model.StackProfile;
 import williamha.com.wagchallenge.repo.StackProfileRepo;
 
-public class StackProfileViewModel extends ViewModel implements StackProfileRepo.AsyncResponse {
+public class StackProfileViewModel extends AndroidViewModel implements StackProfileRepo.AsyncResponse {
     private MutableLiveData<List<StackProfile>> profiles;
+
+    public StackProfileViewModel(@NonNull Application application) {
+        super(application);
+
+    }
 
     public LiveData<List<StackProfile>> getProfiles() {
         if (profiles == null) {
@@ -26,8 +37,19 @@ public class StackProfileViewModel extends ViewModel implements StackProfileRepo
     }
 
     private void loadProfiles() {
-        StackProfileRepo repo = new StackProfileRepo(this);
-        repo.startProfileFetch("1");
+
+        String page = "1";
+
+        if (isNetworkAvailable()) {
+            StackProfileRepo repo = new StackProfileRepo(this, getApplication().getApplicationContext());
+            repo.startProfileFetch(page);
+        } else {
+            StoreManager storeManager = new StoreManager(getApplication().getApplicationContext());
+            String result = storeManager.getDataForPage(page);
+            if (result != null) {
+                fetchCompleted(result);
+            }
+        }
     }
 
     @Override
@@ -64,5 +86,14 @@ public class StackProfileViewModel extends ViewModel implements StackProfileRepo
         }
 
         profiles.setValue(stackProfiles);
+    }
+
+
+    // Helpers
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getApplication().getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 }
