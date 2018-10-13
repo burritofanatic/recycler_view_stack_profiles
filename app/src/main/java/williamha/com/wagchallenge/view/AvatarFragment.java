@@ -8,6 +8,7 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -26,10 +27,12 @@ import williamha.com.wagchallenge.viewmodel.StackProfileViewModel;
  * A simple {@link Fragment} subclass.
  */
 
-public class AvatarFragment extends Fragment {
+public class AvatarFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
 
-    RecyclerView recyclerView;
-    AvatarAdapter adapter;
+    private AvatarAdapter adapter;
+    private StackProfileViewModel stackProfileViewModel;
+    private SwipeRefreshLayout swipeRefreshLayout;
+
 
     public AvatarFragment() {
         // Required empty public constructor
@@ -50,14 +53,16 @@ public class AvatarFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_avatar, container, false);
 
-        recyclerView = view.findViewById(R.id.avatar_recycler_view);
+        RecyclerView recyclerView = view.findViewById(R.id.avatar_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
 
-        StackProfileViewModel stackProfileViewModel = ViewModelProviders.of(this).get(StackProfileViewModel.class);
-        stackProfileViewModel.getProfiles().observe(this, profiles -> {
-            adapter.setProfiles(profiles, getContext());
-        });
+        stackProfileViewModel = ViewModelProviders.of(this).get(StackProfileViewModel.class);
+        kickoffFetch();
+
+
+        swipeRefreshLayout = view.findViewById(R.id.swipe_refresh);
+        swipeRefreshLayout.setOnRefreshListener(this);
 
         List<StackProfile> profiles = new ArrayList<>();
         adapter = new AvatarAdapter(profiles);
@@ -70,15 +75,30 @@ public class AvatarFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-
     }
 
 
     // Helpers
+
+    private void kickoffFetch() {
+        stackProfileViewModel.getProfiles().observe(this, profiles -> {
+            adapter.setProfiles(profiles, getContext());
+            if (swipeRefreshLayout.isRefreshing()) {
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        });
+    }
+
     private boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager
                 = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
+    // Swipe Refresh Listener
+    @Override
+    public void onRefresh() {
+        kickoffFetch();
     }
 }
