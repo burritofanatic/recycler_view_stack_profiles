@@ -7,4 +7,6 @@
     <string name="gold_badges_icon">gold_badges_icon</string>
     <string name="badges">Badges</string>
     <string name="user_data_shared_prefs_key">user_data _%s</string>
+    <string name="network_unavailable">Network Unavailable</string>
+    <string name="offline_message">You are currently offline, and may be seeing stored profiles, or no profiles at all. When you come back online, you can pull to refresh to kick off the fetch.</string>
 </resources>

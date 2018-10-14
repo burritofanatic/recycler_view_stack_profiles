@@ -1,8 +1,10 @@
 package williamha.com.wagchallenge.view;
 
 
+import android.app.AlertDialog;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -75,8 +77,20 @@ public class AvatarFragment extends Fragment implements SwipeRefreshLayout.OnRef
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-    }
+        if (!isNetworkAvailable()) {
+            AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
+            dialog.setTitle(R.string.network_unavailable);
+            dialog.setMessage(R.string.offline_message);
+            dialog.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    dialogInterface.dismiss();
+                }
+            });
 
+            dialog.show();
+        }
+    }
 
     // Helpers
 
