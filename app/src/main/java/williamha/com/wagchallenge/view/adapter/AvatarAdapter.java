@@ -63,11 +63,12 @@ public class AvatarAdapter extends RecyclerView.Adapter<AvatarAdapter.AvatarView
         Picasso picasso = Picasso.get();
         picasso.load(profile.getGravatar())
                 .placeholder(getCircularProgress(avatarViewHolder.profileImageView))
+                .error(R.drawable.person_placeholder)
                 .into(avatarViewHolder.profileImageView);
 
         // To see whether the image was loaded from memory (green), disk (blue),
         // or from the result of a network (red) fetch, uncomment the following line.
-//        picasso.setIndicatorsEnabled(true);
+        // picasso.setIndicatorsEnabled(true);
     }
 
     @Override
