@@ -22,7 +22,7 @@ On the other hand, using SQLite directly would require a bit of boiler plate cod
 only asked for the first page, I decided to merely save the JSON as a String into `SharedPreference`,
 which can be parsed for object instantiation in an offline state.
 
-## Nice to Haves
+## Things I Considered Implementing
 
 - Databinding
 - A more elaborate ViewHolder to display more information.
