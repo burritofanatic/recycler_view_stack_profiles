@@ -1,6 +1,5 @@
 package williamha.com.wagchallenge.repo;
 
-import android.app.Application;
 import android.content.Context;
 import android.os.AsyncTask;
 
@@ -11,9 +10,6 @@ import java.io.InputStreamReader;
 import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Arrays;
-import java.util.Locale;
-
 import williamha.com.wagchallenge.managers.StoreManager;
 
 
